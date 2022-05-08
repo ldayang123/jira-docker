@@ -1,0 +1,36 @@
+version: "3"
+# https://docs.docker.com/compose/compose-file/
+# support Docker version 17.05.0-ce
+services:
+
+#################################### gitlab ######################################################
+
+##############################
+# mshk_gitlab
+##############################
+  mshk_gitlab:
+    image: "ldayang123/gitlab-ce:11.3.9-v0.2"
+    hostname: mshk_gitlab
+    ports:
+    - "82:80"
+    - "445:443"
+
+    networks:
+    - default
+    volumes:
+    - "/data/gitlab/data:/var/opt/gitlab"
+    - "/data/gitlab/logs:/var/log/gitlab"
+    - "/data/gitlab/conf:/etc/gitlab"
+
+    deploy:
+      replicas: 1
+      update_config:
+        delay: 1s
+      restart_policy:
+        condition: on-failure
+
+
+# 统一网络设置
+networks:
+  default:
+    driver: overlay

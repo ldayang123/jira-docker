@@ -1,0 +1,41 @@
+version: '3'
+# https://docs.docker.com/compose/compose-file/
+# support Docker version 17.05.0-ce
+services:
+
+#################################### confluence ######################################################
+
+##############################
+# confluence
+# 使用最多不超过50%的CPU和2G内存，总是有25%的CPU以及1G内存可用
+##############################
+  confluence:
+    image: "wanan/confluence:7.4.0-v0.1"
+    hostname: confluence
+    ports:
+     - "20040:8090"
+     - "20041:8000"
+    #networks:
+    #  - confluence
+    volumes:
+      - "/data/confluence:/var/atlassian/confluence"
+    #depends_on:
+    # - confluence_mysql
+    deploy:
+      replicas: 1
+      update_config:
+        delay: 1s
+      restart_policy:
+        condition: on-failure
+      #resources:
+      #  limits:
+      #    cpus: '0.50'
+      #    memory: 2048M
+      #  reservations:
+      #    cpus: '0.25'
+      #    memory: 1024M
+
+# 统一网络设置
+#networks:
+#  confluence:
+#    driver: overlay

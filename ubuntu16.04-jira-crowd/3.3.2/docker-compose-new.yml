@@ -1,0 +1,33 @@
+version: '3'
+# https://docs.docker.com/compose/compose-file/
+# support Docker version 17.05.0-ce
+services:
+
+#################################### crowd ######################################################
+
+##############################
+# jira_crowd
+##############################
+  jira_crowd:
+    image: "idoall/ubuntu16.04-jira-crowd:3.3.2"
+    hostname: jira_crowd
+    ports:
+     - "20000:8095"
+    #networks:
+    #  - crowd
+    volumes:
+      - /data/crowd/app:/home/work/_app
+      - /data/crowd/data:/home/work/_data
+      - /data/crowd/log:/home/work/_log
+      - /data/crowd/src:/home/work/_src
+    deploy:
+      replicas: 1
+      update_config:
+        delay: 1s
+      restart_policy:
+        condition: on-failure
+
+# 统一网络设置
+#networks:
+#  crowd:
+#    driver: overlay

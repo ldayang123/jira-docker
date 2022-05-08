@@ -1,0 +1,43 @@
+version: "3.6"
+# https://docs.docker.com/compose/compose-file/
+# support Docker version 17.05.0-ce
+services:
+
+#################################### gitlab ######################################################
+
+##############################
+# mshk_gitlab
+##############################
+  mshk_gitlab:
+    image: "idoall/gitlab-ce:11.3.9-ce.0"
+    hostname: mshk_gitlab
+    ports:
+      - "20052:22"
+      - "20050:80"
+      - "20051:443"
+    networks:
+      - mshk
+    environment:
+      GITLAB_OMNIBUS_CONFIG: "from_file('/omnibus_config.rb')"
+    configs:
+      - source: gitlab
+        target: /omnibus_config.rb
+    secrets:
+      - gitlab_root_password
+    deploy:
+      replicas: 1
+      update_config:
+        delay: 1s
+      restart_policy:
+        condition: on-failure
+
+configs:
+  gitlab:
+    file: ./gitlab.rb
+secrets:
+  gitlab_root_password:
+    file: ./root_password.txt
+# 统一网络设置
+networks:
+  mshk:
+    driver: overlay

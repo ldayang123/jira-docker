@@ -1,0 +1,55 @@
+version: '3'
+# https://docs.docker.com/compose/compose-file/
+# support Docker version 17.05.0-ce
+services:
+
+#################################### crucible ######################################################
+
+##############################
+# crucible_mysql
+##############################
+  crucible_mysql:
+    image: idoall/mysql:5.7
+    hostname: crucible_mysql
+    ports:
+     - "6033:3306"
+    volumes:
+      - /Users/lion/my_project/_docker/github_idoall/ubuntu16.04-jira-crucible/4.6.1/my.ini:/etc/mysql/my.cnf
+    networks:
+      - mshk-crucible
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=crucible
+      - MYSQL_USER=crucible
+      - MYSQL_PASSWORD=crucible_mshk
+      - character-set-server=utf8
+      - collation-server=utf8_bin
+    deploy:
+      replicas: 1
+      update_config:
+        delay: 1s
+      restart_policy:
+        condition: on-failure
+##############################
+# crucible
+##############################
+  crucible:
+    image: idoall/ubuntu16.04-jira-crucible:4.6.1
+    hostname: crucible
+    ports:
+     - "80:8060"
+    networks:
+      - mshk-crucible
+    depends_on:
+     - crucible_mysql
+    deploy:
+      replicas: 1
+      update_config:
+        delay: 1s
+      restart_policy:
+        condition: on-failure
+
+# 统一网络设置
+networks:
+  mshk-crucible:
+    driver: overlay
